@@ -4,6 +4,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR / "personal_manager.db"
 
+
 def create_table() :
     '''Функция создания базы данных'''
     with sqlite3.connect(DB_PATH) as connection :

@@ -1,62 +1,77 @@
 #!/bin/bash
-# Автоматически определяем текущую папку проекта (работает и на флешке)
+# Автоматически определяем текущую папку проекта (работает на флешках и в любых директориях)
 cd "$(dirname "$0")"
 
-# === БЛОК АВТОМАТИЧЕСКОЙ НАСТРОЙКИ ОКРУЖЕНИЯ ===
-# Проверяем, существует ли папка .venv
+# 1. Очищаем старые зависшие процессы Streamlit перед стартом, чтобы порт 9999 был всегда свободен
+pkill -f streamlit
+sleep 0.5
+
+# === БЛОК УМНОЙ АВТОНАСТРОЙКИ ОКРУЖЕНИЯ ===
+# Проверяем тип операционной системы
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # --- ЛОГИКА ОПРЕДЕЛЕНИЯ ДЛЯ macOS ---
+    echo "🍏 Обнаружена система macOS"
+else
+    # --- ЛОГИКА ОПРЕДЕЛЕНИЯ ДЛЯ LINUX (Ubuntu/Mint/Debian) ---
+    echo "🐧 Обнаружена система семейства Linux (Ubuntu/Mint)"
+    # Проверяем, установлен ли системный пакет venv (он вырезан в Linux по умолчанию)
+    if ! dpkg -l | grep -q "python3-venv"; then
+        echo "🔧 Системный пакет python3-venv не найден. Устанавливаем через apt..."
+        sudo apt update && sudo apt install -y python3-venv
+    fi
+fi
+
+# Проверяем наличие виртуального окружения в текущей папке проекта
 if [ ! -d ".venv" ]; then
-    echo "📦 Первичный запуск: создание виртуального окружения..."
-    
-    # 1. Создаем чистое окружение
+    echo "📦 Первичный запуск: создание локального виртуального окружения .venv..."
     python3 -m venv .venv
-    
-    # 2. Активируем его для установки зависимостей
     source .venv/bin/activate
-    
-    # 3. Обновляем pip на всякий случай
     pip install --upgrade pip
-    
-    # 4. Проверяем, есть ли файл со списком библиотек, и устанавливаем их
     if [ -f "requirements.txt" ]; then
-        echo "📥 Установка необходимых библиотек из requirements.txt..."
+        echo "📥 Установка боевых библиотек из requirements.txt..."
         pip install -r requirements.txt
-        echo "✅ Все библиотеки успешно установлены!"
-    else
-        echo "⚠️ Внимание: файл requirements.txt не найден! Установите зависимости вручную."
+        echo "✅ Все зависимости успешно установлены!"
     fi
 else
-    # Если папка .venv уже есть — просто активируем её
+    # Если .venv уже создан — просто активируем его
     source .venv/bin/activate
 fi
 # ===============================================
 
-# Запускаем Streamlit в фоне на безопасном порту 8080
-streamlit run main_operation.py --server.headless true --server.port 8080 &
-
-# Даем серверу 1.5 секунды подняться
+# 🚀 2. ЗАПУСК СЕРВЕРА STREAMLIT
+# Запускаем чистый сервер текущей папки на уникальном порту 9999 в фоновом режиме
+streamlit run main_operation.py --server.headless true --server.port 9999 &
 sleep 1.5
 
-URL="http://localhost:8080"
+URL="http://localhost:9999"
 
-# Наша неубиваемая cross-platform логика проверки браузеров
+# 🖥 3. ЗАПУСК ИЗОЛИРОВАННОГО ОКНА ПРИЛОЖЕНИЯ
 if [[ "$OSTYPE" == "darwin"* ]]; then
+    # --- СТАРТ НА macOS ---
     if open -Ra "Google Chrome" 2>/dev/null; then
+        echo "🌐 Запуск изолированного окна через Google Chrome..."
         open -a "Google Chrome" --args --app="$URL"
     elif open -Ra "Yandex" 2>/dev/null; then
-        open -a "Yandex" --args --app="$URL"
+        echo "🌐 Запуск изолированного окна через Яндекс.Браузер..."
+        open -a "Yandex" --args --user-data-dir="/tmp/yandex_safe_profile" --app="$URL"
     else
-        echo "💡 Для запуска в виде отдельного окна без рамок установите Google Chrome."
+        echo "💡 Для запуска в виде отдельного окна без рамок рекомендуется установить Google Chrome."
         open -a "Safari" "$URL"
     fi
 else
+    # --- СТАРТ НА LINUX (Ubuntu/Mint) ---
     if command -v google-chrome &> /dev/null; then
+        echo "🌐 Запуск изолированного окна через Google Chrome (Linux)..."
         google-chrome --app="$URL"
     elif command -v yandex-browser &> /dev/null; then
-        yandex-browser --app="$URL"
-    elif command -v firefox &> /dev/null; then
-        echo "💡 Для запуска в виде отдельного окна без рамок установите Google Chrome."
-        firefox "$URL"
+        echo "🌐 Запуск изолированного окна через Яндекс.Браузер (Linux)..."
+        yandex-browser --user-data-dir="/tmp/yandex_safe_profile" --app="$URL"
+    elif command -v chromium-browser &> /dev/null; then
+        echo "🌐 Запуск изолированного окна через Chromium Browser (Linux)..."
+        chromium-browser --app="$URL"
     else
+        # Отказоустойчивый вариант: если Chromium-браузеров вне Flatpak нет, открываем в системном браузере по умолчанию
+        echo "💡 Для скрытия рамок установите Chromium-браузер вне пакета Flatpak."
         xdg-open "$URL"
     fi
 fi
