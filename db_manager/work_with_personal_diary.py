@@ -1,8 +1,5 @@
 import sqlite3
-from pathlib import Path
-
-BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "personal_manager.db"
+from db_manager.db_config import DB_PATH
 
 def add_data_to_diary(text) :
     '''Функция принимает текст и записывает их в базу'''

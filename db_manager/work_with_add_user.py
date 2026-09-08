@@ -1,9 +1,7 @@
 import sqlite3
 from pathlib import Path
 from utils import check_password,hash_password
-
-BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "personal_manager.db"
+from db_manager.db_config import DB_PATH
 
 def add_user(login,password) :
         '''Функция принимает два параметра логин и пароль и создает запись в бд'''

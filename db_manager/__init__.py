@@ -1,3 +1,4 @@
+from db_manager.db_config import DB_PATH
 from db_manager.create_table_db import create_table
 from db_manager.work_with_add_user import add_user,check_user_in_db,check_user_authorization
 from db_manager.work_with_personal_diary import add_data_to_diary,show_data_to_diary,delete_data_to_diary
