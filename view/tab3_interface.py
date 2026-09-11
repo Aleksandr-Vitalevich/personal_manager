@@ -17,9 +17,10 @@ def operation_tab3() :
             for rec in my_files :
                 rec_id,name,login,pwd,site,token,info = rec
                 dec_pwd = decrypt_text(pwd,master_pwd) if pwd else ""
+                dec_site = decrypt_text(site,master_pwd) if site else ""
                 dec_token = decrypt_text(token,master_pwd) if token else ""
                 dec_info = decrypt_text(info,master_pwd) if info else ""
-                decrypt_files.append((rec_id,name,login,dec_pwd,site,dec_token,dec_info))
+                decrypt_files.append((rec_id,name,login,dec_pwd,dec_site,dec_token,dec_info))
             columns = ["ID", "Сервис", "Логин", "Пароль", "Ссылка", "Токен", "Доп. информация"]
             df = pd.DataFrame(decrypt_files,columns=columns)
             st.dataframe(df,
