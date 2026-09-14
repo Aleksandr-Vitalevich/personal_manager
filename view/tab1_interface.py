@@ -31,20 +31,23 @@ def operation_tab1() :
             if not check_name_service :
                 st.error('Это поле обязательно для заполнения')
             else :
-                master_pwd = st.session_state.master_password_key
-                raw_dct = {
-                "name_service" : name_service.strip(),
-                "login_service" : login_service.strip(),
-                "password_service" : encrypt_text(password_service.strip(),master_pwd),
-                "site_service" : encrypt_text(site_service.strip(),master_pwd),
-                "token_service" : encrypt_text(token_service.strip(),master_pwd),
-                "other_need_information_service" : encrypt_text(other_need_information_service.strip(),master_pwd)
-                }
-                dct = {key : value for key,value in raw_dct.items() if value != ""}
-                send = add_data(dct)
-                if send == "success" :
-                    st.success('Данные успешно записаны')
-                    st.session_state.generated_pwd = ""
-                    st.session_state.form_version += 1
-                    sleep(1.5)
-                    st.rerun()
+                try :
+                    master_pwd = st.session_state.master_password_key
+                    raw_dct = {
+                    "name_service" : name_service.strip(),
+                    "login_service" : login_service.strip(),
+                    "password_service" : encrypt_text(password_service.strip(),master_pwd),
+                    "site_service" : encrypt_text(site_service.strip(),master_pwd),
+                    "token_service" : encrypt_text(token_service.strip(),master_pwd),
+                    "other_need_information_service" : encrypt_text(other_need_information_service.strip(),master_pwd)
+                    }
+                    dct = {key : value for key,value in raw_dct.items() if value != ""}
+                    send = add_data(dct)
+                    if send == "success" :
+                        st.success('Данные успешно записаны')
+                        st.session_state.generated_pwd = ""
+                        st.session_state.form_version += 1
+                        sleep(1.5)
+                        st.rerun()
+                except Exception :
+                    st.error('Ошибка не удалось зашифровать или сохранить данные')

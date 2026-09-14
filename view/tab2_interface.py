@@ -19,15 +19,19 @@ def operation_tab2() :
                     if not user_text.strip() :
                         st.error('Нельзя сохранить пустую запись')
                     else :
-                        master_pwd = st.session_state.master_password_key
-                        encrypted_text = encrypt_text(user_text,master_pwd)
-                        send = add_data_to_diary(encrypted_text)
-                        if send == "success" :
-                                st.success('Запись успешно внесена в базу')
-                                st.session_state.form_version_diary += 1
-                                st.session_state.diary_text_value = ""
-                                sleep(1.5)
-                                st.rerun()
+                        try :
+                            master_pwd = st.session_state.master_password_key
+                            encrypted_text = encrypt_text(user_text,master_pwd)
+                            send = add_data_to_diary(encrypted_text)
+                            if send == "success" :
+                                    st.success('Запись успешно внесена в базу')
+                                    st.session_state.form_version_diary += 1
+                                    st.session_state.diary_text_value = ""
+                                    sleep(1.5)
+                                    st.rerun()
+                        except Exception :
+                              st.error('Ошибка не удалось зашифровать или сохранить запись')
+                              
     with sub_tab_2_2 :
             st.markdown("***Вставьте ваш файл***")
             uploaded_file = st.file_uploader(

@@ -10,7 +10,11 @@ def operation_tab4() :
 
     with sub_tab_3_1 :
         st.subheader('Меню мои записи')
-        my_notes = show_data_to_diary()
+        try :
+            my_notes = show_data_to_diary()
+        except Exception :
+            st.error('Не удалось загрузить данные')
+            my_notes = None
         if my_notes :
             master_pwd = st.session_state.master_password_key
             for note in my_notes :
@@ -24,8 +28,11 @@ def operation_tab4() :
         st.subheader("Меню удаления записи")
         user_input = st.number_input('Введите id записи для удаления',step=1,min_value=1,key="delete_diary_record_id_input")
         if st.button("Удалить запись",use_container_width=True,key="delete_diary_button_click") :
-            delete_file = delete_data_to_diary(user_input)
-            if delete_file == "success" :
-                st.info(f"Удаление прошло успешно Запись с id = {user_input} удалена")
-                sleep(1.5)
-                st.rerun()
+            try :
+                delete_file = delete_data_to_diary(user_input)
+                if delete_file == "success" :
+                    st.info(f"Удаление прошло успешно Запись с id = {user_input} удалена")
+                    sleep(1.5)
+                    st.rerun()
+            except Exception :
+                st.error('Ошибка при удалении записи')
