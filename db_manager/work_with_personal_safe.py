@@ -1,8 +1,12 @@
 import sqlite3
 from db_manager.db_config import DB_PATH
 from utils.logger import db_logger
+from utils.retry import retry_on_lock
+from utils.input_cleaner import clean_inputs
 
 @db_logger
+@retry_on_lock
+@clean_inputs
 def add_data(args) :
     '''Функция принимает аргументы в виде словаря и записывает их в базу'''
     try :
@@ -18,6 +22,7 @@ def add_data(args) :
          raise e
 
 @db_logger
+@retry_on_lock
 def delete_data(id) :
     '''Функция принимает id записи и проводит удаление записи'''
     try :
@@ -31,6 +36,7 @@ def delete_data(id) :
          raise e
 
 @db_logger
+@retry_on_lock
 def show_data() :
     '''Функция возвращает все записи из базы'''
     try :
@@ -44,6 +50,7 @@ def show_data() :
          raise e
 
 @db_logger
+@retry_on_lock
 def update_data(id,args) :
     '''Функция принимает id и параметры и устанавливает новое значение'''
     try :
@@ -60,6 +67,7 @@ def update_data(id,args) :
          raise e
 
 @db_logger
+@retry_on_lock
 def get_data_by_id(id) :
     '''Функция возвращает запись'''
     try :

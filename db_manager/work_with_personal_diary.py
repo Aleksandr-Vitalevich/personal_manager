@@ -1,8 +1,10 @@
 import sqlite3
 from db_manager.db_config import DB_PATH
 from utils.logger import db_logger
+from utils.retry import retry_on_lock
 
 @db_logger
+@retry_on_lock
 def add_data_to_diary(text) :
     '''Функция принимает текст и записывает их в базу'''
     try :
@@ -16,6 +18,7 @@ def add_data_to_diary(text) :
         raise e
 
 @db_logger
+@retry_on_lock
 def delete_data_to_diary(id) :
     '''Функция принимает id записи и проводит удаление записи'''
     try :
@@ -30,6 +33,7 @@ def delete_data_to_diary(id) :
     
 
 @db_logger
+@retry_on_lock
 def show_data_to_diary() :
     '''Функция возвращает все записи из базы'''
     try :

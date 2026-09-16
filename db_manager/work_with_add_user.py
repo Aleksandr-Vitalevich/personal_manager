@@ -3,8 +3,12 @@ from pathlib import Path
 from utils import check_password,hash_password
 from db_manager.db_config import DB_PATH
 from utils.logger import db_logger
+from utils.retry import retry_on_lock
+from utils.input_cleaner import clean_inputs
 
 @db_logger
+@retry_on_lock
+@clean_inputs
 def add_user(login,password) :
         '''Функция принимает два параметра логин и пароль и создает запись в бд'''
         try :
@@ -22,6 +26,8 @@ def add_user(login,password) :
                 raise e
 
 @db_logger
+@retry_on_lock
+@clean_inputs
 def check_user_in_db() :
         '''Функция проверяет наличие пользователя в базе данных'''
         try :
@@ -35,6 +41,8 @@ def check_user_in_db() :
                 raise e
 
 @db_logger
+@retry_on_lock
+@clean_inputs
 def check_user_authorization(login,password) :
         '''Функция принимает логин и пароль'''
         try :

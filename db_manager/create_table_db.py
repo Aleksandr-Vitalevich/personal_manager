@@ -1,8 +1,10 @@
 import sqlite3
 from db_manager.db_config import DB_PATH
 from utils.logger import db_logger
+from utils.retry import retry_on_lock
 
 @db_logger
+@retry_on_lock
 def create_table() :
     '''Функция создания базы данных'''
     try :

@@ -34,12 +34,12 @@ def operation_tab1() :
                 try :
                     master_pwd = st.session_state.master_password_key
                     raw_dct = {
-                    "name_service" : name_service.strip(),
-                    "login_service" : login_service.strip(),
-                    "password_service" : encrypt_text(password_service.strip(),master_pwd),
-                    "site_service" : encrypt_text(site_service.strip(),master_pwd),
-                    "token_service" : encrypt_text(token_service.strip(),master_pwd),
-                    "other_need_information_service" : encrypt_text(other_need_information_service.strip(),master_pwd)
+                    "name_service" : name_service,
+                    "login_service" : login_service,
+                    "password_service" : encrypt_text(password_service,master_pwd),
+                    "site_service" : encrypt_text(site_service,master_pwd),
+                    "token_service" : encrypt_text(token_service,master_pwd),
+                    "other_need_information_service" : encrypt_text(other_need_information_service,master_pwd)
                     }
                     dct = {key : value for key,value in raw_dct.items() if value != ""}
                     send = add_data(dct)
