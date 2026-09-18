@@ -16,11 +16,15 @@ def main_operation_function() :
         """,
         unsafe_allow_html=True
     )
-    try :
-        create_table()
-    except Exception as e :
-        st.error("Ошибка не удалось инициилизировать бд")
-        st.stop()
+    import os
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    db_file_path = os.path.join(BASE_DIR, "personal_manager.db")
+    if not os.path.exists(db_file_path) :
+        try :
+            create_table()
+        except Exception as e :
+            st.error("Ошибка не удалось инициилизировать бд")
+            st.stop()
     st.set_page_config(
         page_title="Personal Manager",
         layout="wide"

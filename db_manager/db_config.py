@@ -1,13 +1,15 @@
 import os
-import streamlit as st
-# Получаем абсолютный путь к этому файлу (db_manager/db_config.py)
-file_path = os.path.abspath(__file__)
+import sys
 
-# Поднимаемся на один уровень вверх — в саму папку db_manager
-db_manager_dir = os.path.dirname(file_path)
+if getattr(sys, 'frozen', False):
+    exe_dir = os.path.dirname(sys.executable)
+    if "Contents/MacOS" in exe_dir:
+        BASE_DIR = os.path.abspath(os.path.join(exe_dir, "../../../"))
+    else:
+        BASE_DIR = exe_dir
+else:
+    current_file_path = os.path.abspath(__file__)
+    db_manager_dir = os.path.dirname(current_file_path)
+    BASE_DIR = os.path.dirname(db_manager_dir)
 
-# Поднимаемся еще на один уровень вверх — в КОРЕНЬ текущего проекта
-BASE_DIR = os.path.dirname(db_manager_dir)
-
-# Формируем путь к базе данных строго в корне текущего запущенного проекта
 DB_PATH = os.path.join(BASE_DIR, "personal_manager.db")
